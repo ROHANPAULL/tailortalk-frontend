@@ -1,14 +1,17 @@
 import streamlit as st
 import requests
 
-# Set up the page
+# ========== CONFIGURATION ==========
+BACKEND_URL = "https://tailortalk-backend-2.onrender.com/chat"
+
+# ========== PAGE SETUP ==========
 st.set_page_config(
     page_title="TailorTalk - AI Chat for Appointments",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# Inject custom CSS for a stylish dark theme and chat bubbles
+# ========== CUSTOM CSS ==========
 st.markdown("""
     <style>
     body {
@@ -57,13 +60,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Page Title
+# ========== TITLE ==========
 st.markdown("## 🧵 TailorTalk - Book Appointments with AI")
 st.markdown("Ask anything related to booking your tailor appointment or queries!")
 
-# -------------------------
-# Slot Checker UI (Hardcoded)
-# -------------------------
+# ========== SLOT CHECKER ==========
 with st.expander("📅 Check availability directly"):
     st.markdown("### Want to see all free slots for a date?")
     day = st.selectbox("Choose date expression", [
@@ -92,9 +93,7 @@ with st.expander("📅 Check availability directly"):
         else:
             st.error("Something went wrong fetching slots.")
 
-# -------------------------
-# Chat Interface (unchanged)
-# -------------------------
+# ========== CHAT UI ==========
 user_query = st.text_input("💬 Enter your message:", "")
 
 if "chat_history" not in st.session_state:
@@ -106,10 +105,7 @@ if st.button("Send"):
     else:
         st.session_state.chat_history.append(("user", user_query))
         try:
-            response = requests.post(
-                "http://127.0.0.1:8000/chat",
-                json={"query": user_query}
-            )
+            response = requests.post(BACKEND_URL, json={"query": user_query})
             if response.status_code == 200:
                 ai_reply = response.json().get("response", "No response")
                 st.session_state.chat_history.append(("bot", ai_reply))
@@ -118,8 +114,8 @@ if st.button("Send"):
         except Exception as e:
             st.session_state.chat_history.append(("bot", f"Request failed: {e}"))
 
+# ========== CHAT HISTORY ==========
 st.markdown("---")
 for role, message in st.session_state.chat_history:
     css_class = "user" if role == "user" else "bot"
     st.markdown(f"<div class='chat-bubble {css_class}'>{message}</div>", unsafe_allow_html=True)
-response = requests.post("https://tailor-talk-backend.onrender.com/chat", json={"query": user_query})
