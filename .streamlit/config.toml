@@ -1,5 +1,5 @@
 [server]
-port = $PORT
+port = 10000
 enableCORS = false
 headless = true
 address = "0.0.0.0"
