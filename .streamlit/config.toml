@@ -1,4 +1,6 @@
 [server]
-port = 10000
-headless = true
+port = $PORT
 address = "0.0.0.0"
+headless = true
+enableXsrfProtection = false
+enableCORS = false
